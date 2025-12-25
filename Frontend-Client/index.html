@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI | Assistant Intelligent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dark-gradient: linear-gradient(135deg, #141E30 0%, #243B55 100%);
+            --neon-gradient: linear-gradient(135deg, #00dbde 0%, #fc00ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.15);
+            --ai-color: #667eea;
+            --user-color: #00c9b7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+        
+        .theme-light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(720deg); }
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-gradient);
+            border-radius: 10px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--neon-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 10px 20px rgba(0, 219, 222, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .logo-text h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--neon-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle.active {
+            background: var(--neon-gradient);
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle.active .toggle-slider {
+            transform: translateX(30px);
+        }
+        
+        /* Chat Container */
+        .chat-wrapper {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            flex: 0 0 300px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .sidebar-header i {
+            font-size: 24px;
+            background: var(--neon-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #00c9b7;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .suggestions-box h4 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .suggestions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .suggestion-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .suggestion-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            border-color: var(--ai-color);
+        }
+        
+        /* Chat Main */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .ai-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--neon-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 10px 20px rgba(0, 219, 222, 0.3);
+        }
+        
+        .ai-info h3 {
+            font-size: 1.3rem;
+            margin: 0;
+        }
+        
+        .ai-info p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin: 0;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            max-height: 500px;
+            scroll-behavior: smooth;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--neon-gradient);
+            border-radius: 10px;
+        }
+        
+        /* Message Styles */
+        .message {
+            margin-bottom: 25px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .message-ai {
+            display: flex;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            position: relative;
+        }
+        
+        .message-user .message-content {
+            background: linear-gradient(135deg, var(--user-color), #009688);
+            color: white;
+            border-radius: 20px 20px 5px 20px;
+            padding: 18px 22px;
+            box-shadow: 0 10px 20px rgba(0, 201, 183, 0.2);
+        }
+        
+        .message-ai .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px 20px 20px 5px;
+            padding: 18px 22px;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .message-text {
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        
+        .message-time {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 15px 0;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--ai-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        /* Input Area */
+        .input-area {
+            padding: 25px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 15px;
+        }
+        
+        #questionInput {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 18px 25px;
+            color: inherit;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        #questionInput:focus {
+            outline: none;
+            border-color: var(--ai-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        #questionInput::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        #sendBtn {
+            width: 60px;
+            height: 60px;
+            background: var(--neon-gradient);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 219, 222, 0.3);
+        }
+        
+        #sendBtn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 219, 222, 0.4);
+        }
+        
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .input-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 8px 15px;
+            color: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Theme Light Overrides */
+        .theme-light .sidebar,
+        .theme-light .chat-main,
+        .theme-light .stat-card,
+        .theme-light .message-ai .message-content {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        
+        .theme-light #questionInput {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        
+        .theme-light #questionInput::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .chat-wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Nexus AI</h1>
+                    <p>Assistant Intelligent RAG</p>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="theme-toggle" id="themeToggle">
+                    <div class="toggle-slider">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                </div>
+                <button class="btn action-btn" onclick="clearChat()">
+                    <i class="fas fa-trash-alt"></i>
+                    Effacer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Wrapper -->
+        <div class="chat-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar animate__animated animate__fadeInLeft">
+                <div class="sidebar-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Statistiques en Temps Réel</h4>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-value" id="knowledgeSize">0</div>
+                        <div class="stat-label">Documents Indexés</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="stat-value" id="responseTime">-</div>
+                        <div class="stat-label">Temps Réponse</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="stat-value" id="messageCount">0</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-value" id="apiStatus">✓</div>
+                        <div class="stat-label">Status API</div>
+                    </div>
+                </div>
+                
+                <div class="suggestions-box">
+                    <h4><i class="fas fa-lightbulb"></i> Suggestions Rapides</h4>
+                    <div class="suggestions-list">
+                        <button class="suggestion-btn" onclick="askQuestion('Résume le contenu principal')">
+                            <i class="fas fa-file-contract"></i> Résumé du contenu
+                        </button>
+                        <button class="suggestion-btn" onclick="askQuestion('Quelles sont les informations clés ?')">
+                            <i class="fas fa-key"></i> Informations clés
+                        </button>
+                        <button class="suggestion-btn" onclick="askQuestion('Explique-moi en détails')">
+                            <i class="fas fa-search-plus"></i> Détails approfondis
+                        </button>
+                        <button class="suggestion-btn" onclick="askQuestion('Donne-moi des exemples concrets')">
+                            <i class="fas fa-list-ul"></i> Exemples concrets
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Main -->
+            <div class="chat-main animate__animated animate__fadeInRight">
+                <div class="chat-header">
+                    <div class="ai-status">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-info">
+                            <h3>Assistant Nexus</h3>
+                            <p>Basé sur votre base de connaissances RAG</p>
+                        </div>
+                    </div>
+                    <div class="connection-status">
+                        <span class="badge bg-success" id="connectionStatus">
+                            <i class="fas fa-circle"></i> Connecté
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome Message -->
+                    <div class="message message-ai">
+                        <div class="message-content">
+                            <div class="message-text">
+                                <p>✨ <strong>Bienvenue dans Nexus AI !</strong></p>
+                                <p>Je suis votre assistant intelligent, capable de répondre à vos questions en utilisant votre base de connaissances personnalisée.</p>
+                                <p>Posez-moi n'importe quelle question sur les documents que vous avez indexés, ou utilisez les suggestions rapides à gauche !</p>
+                            </div>
+                            <div class="message-meta">
+                                <span class="message-time" id="welcomeTime"></span>
+                                <span class="message-type">Assistant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none; padding-left: 25px;">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <input type="text" 
+                               id="questionInput" 
+                               class="form-control" 
+                               placeholder="Posez votre question ici... (Appuyez sur Entrée pour envoyer)"
+                               autocomplete="off"
+                               autofocus>
+                        <button id="sendBtn" onclick="sendQuestion()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="input-actions">
+                        <button class="action-btn" onclick="askQuestion('Donne-moi un résumé')">
+                            <i class="fas fa-file-alt"></i> Résumé
+                        </button>
+                        <button class="action-btn" onclick="askQuestion('Quels sont les points importants ?')">
+                            <i class="fas fa-star"></i> Points clés
+                        </button>
+                        <button class="action-btn" onclick="askQuestion('Explique comme si j\'avais 5 ans')">
+                            <i class="fas fa-child"></i> Explication simple
+                        </button>
+                        <button class="action-btn" onclick="voiceInput()">
+                            <i class="fas fa-microphone"></i> Parler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
