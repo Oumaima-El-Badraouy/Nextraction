@@ -1,38 +1,23 @@
-# Dockerfile
+# Dockerfile - Version ultra simple
 FROM python:3.9-slim
-
-# Variables d'environnement
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Dossier de travail
 WORKDIR /app
 
-# Installation des dépendances système
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    curl \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+# Copier seulement le backend d'abord
+COPY Backend/requirements.txt .
 
-# Copier les requirements d'abord (pour meilleur cache)
-COPY Backend/requirements.txt /app/requirements.txt
+# Installer les dépendances
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Installer les dépendances Python
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r /app/requirements.txt
+# Copier TOUT le projet
+COPY . .
 
-# Copier tout le projet
-COPY . /app/
+# Créer un dossier pour les données
+RUN mkdir -p /app/data
 
-# Créer les dossiers nécessaires
-RUN mkdir -p /app/data /app/logs
-
-# Exposer le port
+# Port
 EXPOSE 8000
 
-# Commande de démarrage
+# Commande simple
 CMD ["python", "Backend/run.py"]
