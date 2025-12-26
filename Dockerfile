@@ -1,6 +1,4 @@
-# Dockerfile - Version ultra simple
-FROM python:3.9-slim
-
+FROM pytorch/pytorch:2.1.0-cpu
 # Dossier de travail
 WORKDIR /app
 
